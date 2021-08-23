@@ -1,11 +1,10 @@
 package com.example.sync.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.example.sync.databinding.ActivityRegistrationBinding
-import com.example.sync.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,19 +20,11 @@ class RegistrationActivity :
         setContentView(binding.root)
 
         binding.registerButton.setOnClickListener {
-            val email = binding.loginField.text.toString()
-            val password = binding.passwordField.text.toString()
-            if (viewModel.validateEmail(binding.loginField) and viewModel.validatePassword(
-                    binding.passwordField,
-                    Constants.PASSWORD_REGISTRATION_PATTERN
-                )
-            ) {
-                viewModel.register(email, password)
-            }
+            viewModel.register(binding.loginField, binding.passwordField)
         }
 
         viewModel.registrationState.observe(this, { result ->
-            Toast.makeText(this, result.first, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(result.first), Toast.LENGTH_SHORT).show()
             if (result.second) {
                 onBackPressed()
             }

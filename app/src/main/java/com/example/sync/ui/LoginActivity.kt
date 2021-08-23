@@ -6,12 +6,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sync.databinding.ActivityLoginBinding
-import com.example.sync.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LoginActivity :
-    AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: ValidationViewModel by viewModels()
@@ -20,17 +18,8 @@ class LoginActivity :
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
         binding.loginButton.setOnClickListener {
-            val email = binding.loginField.text.toString()
-            val password = binding.passwordField.text.toString()
-            if (viewModel.validateEmail(binding.loginField) and viewModel.validatePassword(
-                    binding.passwordField, Constants.PASSWORD_LOGIN_PATTERN
-                )
-            ) {
-                viewModel.login(email, password)
-            }
+            viewModel.login(binding.loginField, binding.passwordField)
         }
         viewModel.authState.observe(this, { result ->
             Toast.makeText(this, result.first, Toast.LENGTH_SHORT).show()

@@ -15,11 +15,5 @@ class Constants {
                     ".{6,}" +  //at least 6 characters
                     "$"
         )
-        val PASSWORD_LOGIN_PATTERN: Pattern = Pattern.compile(
-            "^" +
-                    "(?=\\S+$)" +  //no white spaces
-                    ".{6,}" +  //at least 6 characters
-                    "$"
-        )
     }
 }
