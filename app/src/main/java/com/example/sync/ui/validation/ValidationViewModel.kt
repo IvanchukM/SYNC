@@ -1,16 +1,14 @@
-package com.example.sync.ui
+package com.example.sync.ui.validation
 
+import android.util.Log
 import android.util.Patterns
 import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.sync.R
-import com.example.sync.repository.FirebaseRepository
+import com.example.sync.repository.Repository
 import com.example.sync.utils.Constants
-import com.google.firebase.auth.FirebaseAuthException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -22,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ValidationViewModel @Inject constructor(
-    private val firebaseRepository: FirebaseRepository
+    private val repository: Repository,
+    private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
     val authState = MutableLiveData<Pair<Int, Boolean>>()
@@ -34,7 +33,10 @@ class ValidationViewModel @Inject constructor(
             try {
                 if (validateEmail(email) and validatePassword(password)
                 ) {
-                    firebaseRepository.authenticate(email.text.toString(), password.text.toString())
+                    repository.authenticate(
+                        email.text.toString().trim(),
+                        password.text.toString().trim()
+                    )
                         .let {
                             authState.postValue(Pair(R.string.login_successful, true))
                         }
@@ -49,12 +51,15 @@ class ValidationViewModel @Inject constructor(
         }
     }
 
-    fun register(email: EditText, password: EditText) {
+    fun register(email: EditText, password: EditText, username: EditText) {
         job = CoroutineScope(IO).launch {
             try {
                 if (validateEmail(email) and validatePassword(password)
                 ) {
-                    firebaseRepository.register(email.text.toString(), password.text.toString())
+                    repository.register(
+                        email.text.toString().trim(),
+                        password.text.toString().trim()
+                    )
                         .let {
                             registrationState.postValue(
                                 Pair(
@@ -62,15 +67,28 @@ class ValidationViewModel @Inject constructor(
                                     true
                                 )
                             )
+                            saveUserData(username.text.toString())
                         }
                 }
 
             } catch (e: FirebaseAuthUserCollisionException) {
                 registrationState.postValue(Pair(R.string.email_taken, false))
+                Log.d("TAG", "register: $e")
             } catch (e: FirebaseAuthException) {
+                Log.d("TAG", "register: $e")
                 registrationState.postValue(Pair(R.string.error_msg, false))
             }
         }
+    }
+
+    private fun saveUserData(username: String) {
+        val currentUser = firebaseAuth.currentUser?.uid.toString()
+        val userData = hashMapOf<String, Any?>().also {
+            it["uid"] = currentUser
+            it["username"] = username
+            it["profilePicture"] = null
+        }
+        repository.addUserData(currentUser, userData)
     }
 
     private suspend fun validateEmail(email: EditText): Boolean {
@@ -114,4 +132,6 @@ class ValidationViewModel @Inject constructor(
         super.onCleared()
         job?.cancel()
     }
+
 }
+

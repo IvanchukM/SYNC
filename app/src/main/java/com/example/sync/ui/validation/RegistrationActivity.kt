@@ -1,4 +1,4 @@
-package com.example.sync.ui
+package com.example.sync.ui.validation
 
 import android.os.Bundle
 import android.widget.Toast
@@ -8,8 +8,7 @@ import com.example.sync.databinding.ActivityRegistrationBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RegistrationActivity :
-    AppCompatActivity() {
+class RegistrationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegistrationBinding
     private val viewModel: ValidationViewModel by viewModels()
@@ -20,7 +19,7 @@ class RegistrationActivity :
         setContentView(binding.root)
 
         binding.registerButton.setOnClickListener {
-            viewModel.register(binding.loginField, binding.passwordField)
+            viewModel.register(binding.loginField, binding.passwordField, binding.usernameField)
         }
 
         viewModel.registrationState.observe(this, { result ->
@@ -30,4 +29,5 @@ class RegistrationActivity :
             }
         })
     }
+
 }

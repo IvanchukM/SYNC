@@ -15,5 +15,8 @@ class Constants {
                     ".{6,}" +  //at least 6 characters
                     "$"
         )
+        const val USERS: String = "users"
+        const val USERNAME: String = "username"
+        const val MESSAGES: String = "messages"
     }
 }
