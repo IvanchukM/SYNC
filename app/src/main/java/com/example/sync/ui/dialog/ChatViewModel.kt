@@ -1,6 +1,5 @@
 package com.example.sync.ui.dialog
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sync.model.Message
@@ -21,7 +20,6 @@ class ChatViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var uid: String? = null
-    val t = MutableLiveData<LoadingState<Message>>(LoadingState.loading())
 
     init {
         getUid()
@@ -54,10 +52,4 @@ class ChatViewModel @Inject constructor(
         emit(LoadingState.failed(it.message.toString()))
     }.flowOn(IO)
 
-//    fun getUserName() {
-//        job = CoroutineScope(IO).launch {
-//            username.postValue(repository.getCollection())
-//            Log.d("TAG", "getUserName: ${repository.getCollection()}")
-//        }
-//    }
 }
