@@ -16,8 +16,7 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 class ChatAdapter(
     private val options: FirebaseRecyclerOptions<Message>,
     private val currentUser: String
-) :
-    FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder>(options) {
+) : FirebaseRecyclerAdapter<Message, RecyclerView.ViewHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)

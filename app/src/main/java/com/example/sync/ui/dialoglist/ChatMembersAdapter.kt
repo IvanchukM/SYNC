@@ -5,9 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sync.databinding.DialogListItemBinding
 import com.example.sync.model.ChatMembers
+import com.example.sync.model.ChatRoom
 import com.example.sync.utils.loadImage
 
-class DialogMembersAdapter : RecyclerView.Adapter<DialogListVIewHolder>() {
+class DialogMembersAdapter(private val createChatClickListener: CreateChatClickListener) :
+    RecyclerView.Adapter<DialogListVIewHolder>() {
 
     private var chatMembers: List<ChatMembers> = listOf()
 
@@ -16,8 +18,9 @@ class DialogMembersAdapter : RecyclerView.Adapter<DialogListVIewHolder>() {
             DialogListItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
+            createChatClickListener
         )
 
     override fun onBindViewHolder(holder: DialogListVIewHolder, position: Int) {
@@ -30,13 +33,31 @@ class DialogMembersAdapter : RecyclerView.Adapter<DialogListVIewHolder>() {
         this.chatMembers = chatMembers
         notifyDataSetChanged()
     }
+
 }
 
-class DialogListVIewHolder(private val binding: DialogListItemBinding) :
+class DialogListVIewHolder(
+    private val binding: DialogListItemBinding,
+    private val createChatClickListener: CreateChatClickListener
+) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(chatMembers: ChatMembers) {
+    fun bind(
+        chatMembers: ChatMembers
+    ) {
         binding.userProfileImage.loadImage(chatMembers.userProfileImage)
         binding.username.text = chatMembers.username
+
+        binding.username.setOnClickListener {
+            createChatClickListener.createChat(
+                userId = chatMembers.userId
+            )
+        }
     }
+}
+
+interface CreateChatClickListener {
+    fun createChat(
+        userId: String
+    )
 }

@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sync.databinding.ActivityMainBinding
 import com.example.sync.ui.dialog.ChatActivity
-import com.example.sync.ui.dialoglist.ChatListActivity
+import com.example.sync.ui.dialoglist.CreateDialogActivity
 import com.example.sync.ui.validation.LoginActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -25,8 +25,8 @@ class MainActivity : AppCompatActivity() {
         binding.openDialogButton.setOnClickListener {
             openActivity(ChatActivity::class.java)
         }
-        binding.openDialogsButton.setOnClickListener {
-            openActivity(ChatListActivity::class.java)
+        binding.createDialogButton.setOnClickListener {
+            openActivity(CreateDialogActivity::class.java)
         }
         binding.logout.setOnClickListener {
             Firebase.auth.signOut()

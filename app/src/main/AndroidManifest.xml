@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SYNC">
-        <activity android:name=".ui.dialoglist.ChatListActivity"></activity>
+        <activity android:name=".ui.dialoglist.CreateDialogActivity"></activity>
         <activity android:name=".ui.dialog.ChatActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
