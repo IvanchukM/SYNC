@@ -1,9 +1,14 @@
 package com.example.sync.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.sync.databinding.ActivityMainBinding
+import com.example.sync.ui.dialog.ChatActivity
+import com.example.sync.ui.dialoglist.CreateDialogActivity
+import com.example.sync.ui.validation.LoginActivity
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,13 +20,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.openLoginBtn.setOnClickListener {
-            openLoginActivity()
+            openActivity(LoginActivity::class.java)
         }
-
+        binding.openDialogButton.setOnClickListener {
+            openActivity(ChatActivity::class.java)
+        }
+        binding.createDialogButton.setOnClickListener {
+            openActivity(CreateDialogActivity::class.java)
+        }
+        binding.logout.setOnClickListener {
+            Firebase.auth.signOut()
+        }
     }
 
-    private fun openLoginActivity() {
-        val intent = Intent(this, LoginActivity::class.java)
+    private fun <T> openActivity(activity: Class<T>) {
+        val intent = Intent(this, activity)
         startActivity(intent)
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.example.sync.ui
+package com.example.sync.ui.validation
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,13 +6,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sync.databinding.ActivityLoginBinding
+import com.example.sync.ui.BaseViewModelActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity() {
+class LoginActivity: BaseViewModelActivity<ActivityLoginBinding>() {
 
-    private lateinit var binding: ActivityLoginBinding
     private val viewModel: ValidationViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -36,4 +37,8 @@ class LoginActivity : AppCompatActivity() {
     private fun openRegistrationActivity() {
         startActivity(Intent(this, RegistrationActivity::class.java))
     }
+
+    override fun getViewBinding(): ActivityLoginBinding =
+        ActivityLoginBinding.inflate(layoutInflater)
+
 }
