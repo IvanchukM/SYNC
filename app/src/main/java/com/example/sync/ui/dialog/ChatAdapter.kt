@@ -4,9 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sync.R
-import com.example.sync.databinding.ActivityDialogBinding.bind
-import com.example.sync.databinding.ActivityDialogListBinding.bind
-import com.example.sync.databinding.ActivityLoginBinding.bind
 import com.example.sync.databinding.MessageFromItemBinding
 import com.example.sync.databinding.MessageToItemBinding
 import com.example.sync.model.Message

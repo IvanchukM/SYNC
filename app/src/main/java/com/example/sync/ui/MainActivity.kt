@@ -1,14 +1,9 @@
 package com.example.sync.ui
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sync.R
 import com.example.sync.databinding.ActivityMainBinding
-import com.example.sync.ui.dialog.ChatActivity
-import com.example.sync.ui.dialoglist.CreateDialogActivity
-import com.example.sync.ui.validation.LoginActivity
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,24 +14,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.openLoginBtn.setOnClickListener {
-            openActivity(LoginActivity::class.java)
-        }
-        binding.openDialogButton.setOnClickListener {
-            openActivity(ChatActivity::class.java)
-        }
-        binding.createDialogButton.setOnClickListener {
-            openActivity(CreateDialogActivity::class.java)
-        }
-        binding.logout.setOnClickListener {
-            Firebase.auth.signOut()
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.activity_fragment_container,
+                    MainScreenContainerFragment.newInstance()
+                )
+                .commit()
         }
     }
-
-    private fun <T> openActivity(activity: Class<T>) {
-        val intent = Intent(this, activity)
-        startActivity(intent)
-    }
-
-
 }

@@ -1,24 +1,25 @@
 package com.example.sync.ui.profile
 
 import android.os.Bundle
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import com.example.sync.databinding.ActivityProfileBinding
+import android.view.View
+import androidx.fragment.app.viewModels
+import com.example.sync.databinding.FragmentProfileBinding
+import com.example.sync.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ProfileActivity : AppCompatActivity() {
+class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
-    private lateinit var binding: ActivityProfileBinding
     private val viewModel: ProfileViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityProfileBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun getViewBinding() = FragmentProfileBinding.inflate(layoutInflater)
 
-        //        fab.setOnClickListener {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
+    //        fab.setOnClickListener {
 //            val input = findViewById<View>(R.id.input) as EditText
 //
 //            // Read the input field and push a new instance
@@ -38,5 +39,7 @@ class ProfileActivity : AppCompatActivity() {
 //            // Clear the input
 //            input.setText("")
 //        }
+    companion object {
+        fun newInstance() = ProfileFragment()
     }
 }
