@@ -49,7 +49,17 @@ class Repository @Inject constructor(
             .get(USERNAME)
 
 
-    fun getUsers(): Task<QuerySnapshot> = firebaseFirestore.collection(USERS).get()
+    fun getUsers(currentUser: String): Task<QuerySnapshot> =
+        firebaseFirestore.collection(USERS)
+            .whereNotEqualTo("uid", currentUser)
+            .get()
+
+    fun checkIfChatRoomAlreadyExist(ownerId: String, userId: String): Task<QuerySnapshot> =
+        firebaseFirestore.collection(CHATROOM)
+            .whereEqualTo("ownerId", ownerId)
+            .whereEqualTo("userId", userId)
+            .get()
+
 
     fun createChatRoom(chatRoom: HashMap<String, Any?>) {
         val chatRoomInstance = firebaseFirestore.collection(CHATROOM).document()

@@ -40,6 +40,7 @@ class MainScreenFragment : BaseFragment<FragmentMainScreenBinding>() {
                 R.id.activity_fragment_container,
                 fragment
             )
+            .addToBackStack(null)
             .commit()
     }
 

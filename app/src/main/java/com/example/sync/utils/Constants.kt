@@ -15,6 +15,7 @@ class Constants {
                     ".{6,}" +  //at least 6 characters
                     "$"
         )
+        const val UID: String = "uid"
         const val USERS: String = "users"
         const val USERNAME: String = "username"
         const val CHAT_USER_ID: String = "userId"

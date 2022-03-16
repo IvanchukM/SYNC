@@ -29,7 +29,7 @@ class CreateDialogFragment : BaseFragment<FragmentCreateDialogBinding>(),
     override fun createChat(userId: String) {
         // pass ownerId via intent
         // now uid = Nick uid
-        viewModel.createChatRoom(userId = userId, ownerId = "pMY7VMwHPTgHX02u5GmWkEuQ74M2")
+        viewModel.createChatRoom(userId = userId, ownerId = "V8dno26vkkXyi0hLGWCXfnNTdFC2")
     }
 
     companion object {

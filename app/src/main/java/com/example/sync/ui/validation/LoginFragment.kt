@@ -36,6 +36,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     R.id.activity_fragment_container,
                     RegistrationFragment.newInstance()
                 )
+                .addToBackStack(null)
                 .commit()
         }
     }

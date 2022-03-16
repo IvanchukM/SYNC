@@ -15,7 +15,7 @@ class CreateDialogViewModel @Inject constructor(private val repository: Reposito
     val dialogMembers = MutableLiveData<List<ChatMembers>>()
 
     init {
-        getUsers()
+        getUsers(repository.getUid())
     }
 
     fun createChatRoom(userId: String, ownerId: String) {
@@ -23,11 +23,19 @@ class CreateDialogViewModel @Inject constructor(private val repository: Reposito
             it["ownerId"] = ownerId
             it["userId"] = userId
         }
-        repository.createChatRoom(chatRoom)
+
+        repository.checkIfChatRoomAlreadyExist(ownerId, userId)
+            .addOnSuccessListener { chatRooms ->
+                if (chatRooms.documents.isEmpty()) {
+                    repository.createChatRoom(chatRoom)
+                } else{
+                    Log.d("TAG", "Chat is already exist")
+                }
+            }
     }
 
-    private fun getUsers() {
-        repository.getUsers()
+    private fun getUsers(currentUser: String) {
+        repository.getUsers(currentUser)
             .addOnSuccessListener { users ->
                 val dialogMembers = mutableListOf<ChatMembers>()
                 for (user in users) {

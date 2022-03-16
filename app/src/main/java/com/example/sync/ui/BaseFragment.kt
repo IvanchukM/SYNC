@@ -30,13 +30,6 @@ abstract class BaseFragment<VBinding : ViewBinding> : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setUpViews()
-    }
-
-    open fun setUpViews() {}
-
     private fun init() {
         binding = getViewBinding()
     }
