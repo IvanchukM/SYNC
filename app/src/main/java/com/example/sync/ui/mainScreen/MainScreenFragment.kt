@@ -22,9 +22,6 @@ class MainScreenFragment : BaseFragment<FragmentMainScreenBinding>() {
         binding.openLoginBtn.setOnClickListener {
             openFragment(LoginFragment.newInstance())
         }
-        binding.openDialogButton.setOnClickListener {
-            openFragment(ChatFragment.newInstance())
-        }
         binding.createDialogButton.setOnClickListener {
             openFragment(CreateDialogFragment.newInstance())
         }

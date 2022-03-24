@@ -6,19 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sync.model.ChatMembers
 import com.example.sync.repository.Repository
+import com.example.sync.utils.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateDialogViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    val dialogMembers = MutableLiveData<List<ChatMembers>>()
+    private val ownerId = MutableLiveData<String>()
 
     init {
-        getUsers(repository.getUid())
+        ownerId.value = repository.getUid()
     }
 
-    fun createChatRoom(userId: String, ownerId: String) {
+    fun createChatRoom(userId: String) {
+        val ownerId: String = this.ownerId.value.toString()
         val chatRoom = hashMapOf<String, Any?>().also {
             it["ownerId"] = ownerId
             it["userId"] = userId
@@ -28,16 +34,18 @@ class CreateDialogViewModel @Inject constructor(private val repository: Reposito
             .addOnSuccessListener { chatRooms ->
                 if (chatRooms.documents.isEmpty()) {
                     repository.createChatRoom(chatRoom)
-                } else{
+                } else {
                     Log.d("TAG", "Chat is already exist")
                 }
             }
     }
 
-    private fun getUsers(currentUser: String) {
+    fun getUsers(): Flow<LoadingState<MutableList<ChatMembers>>> = channelFlow {
+        val currentUser = ownerId.value.toString()
+        send(LoadingState.loading())
+        val dialogMembers = mutableListOf<ChatMembers>()
         repository.getUsers(currentUser)
             .addOnSuccessListener { users ->
-                val dialogMembers = mutableListOf<ChatMembers>()
                 for (user in users) {
                     dialogMembers.add(
                         ChatMembers(
@@ -46,9 +54,8 @@ class CreateDialogViewModel @Inject constructor(private val repository: Reposito
                             username = user.data["username"].toString()
                         )
                     )
-                    this.dialogMembers.value = dialogMembers
-                    Log.d("TAG", "getUsers: ${user.data}")
                 }
-            }
+            }.await()
+        send(LoadingState.success(dialogMembers))
     }
 }
