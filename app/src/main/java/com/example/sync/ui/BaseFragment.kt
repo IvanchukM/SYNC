@@ -28,6 +28,7 @@ abstract class BaseFragment<VBinding : ViewBinding> : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return binding.root
+        arguments
     }
 
     private fun init() {

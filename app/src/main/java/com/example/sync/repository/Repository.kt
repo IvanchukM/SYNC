@@ -1,20 +1,17 @@
 package com.example.sync.repository
 
-import androidx.lifecycle.MutableLiveData
-import com.example.sync.model.ChatRoom
-import com.example.sync.utils.Constants
 import com.example.sync.utils.Constants.Companion.CHATROOM
 import com.example.sync.utils.Constants.Companion.CHAT_OWNER_ID
+import com.example.sync.utils.Constants.Companion.CHAT_ROOM_ID
 import com.example.sync.utils.Constants.Companion.CHAT_USER_ID
+import com.example.sync.utils.Constants.Companion.MESSAGES
 import com.example.sync.utils.Constants.Companion.USERNAME
 import com.example.sync.utils.Constants.Companion.USERS
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -54,10 +51,12 @@ class Repository @Inject constructor(
             .whereNotEqualTo("uid", currentUser)
             .get()
 
-    fun checkIfChatRoomAlreadyExist(ownerId: String, userId: String): Task<QuerySnapshot> =
+    fun getChatRoom(ownerId: String, userId: String): Task<QuerySnapshot> =
         firebaseFirestore.collection(CHATROOM)
-            .whereEqualTo("ownerId", ownerId)
-            .whereEqualTo("userId", userId)
+            .whereEqualTo(
+                CHAT_OWNER_ID, ownerId
+            )
+            .whereEqualTo(CHAT_USER_ID, userId)
             .get()
 
 
@@ -66,5 +65,17 @@ class Repository @Inject constructor(
         val chatRoomId = chatRoomInstance.id
         chatRoom["roomId"] = chatRoomId
         chatRoomInstance.set(chatRoom)
+    }
+
+    fun getMessages(
+        roomId: String
+    ): Task<QuerySnapshot> =
+        firebaseFirestore.collection(MESSAGES)
+            .whereEqualTo(CHAT_ROOM_ID, roomId)
+            .get()
+
+    fun sendMessage(messageData: HashMap<String, Any?>) {
+        firebaseFirestore.collection(MESSAGES)
+            .add(messageData)
     }
 }

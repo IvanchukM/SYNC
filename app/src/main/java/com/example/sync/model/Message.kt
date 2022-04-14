@@ -1,16 +1,12 @@
 package com.example.sync.model
 
-class Message {
-    var messageText: String? = null
-    var messageTo: String? = null
-    var messageFrom: String? = null
-//    val messageTime: Long = Date().time
+import com.example.sync.utils.Utils
 
-    constructor()
+data class Message(
+    val messageText: String,
+    val receiverId: String,
+    val senderId: String,
+    val messageTime: String = Utils.getCurrentTime(),
+    val roomId: String
+)
 
-    constructor(messageText: String, messageTo: String, messageFrom: String) {
-        this.messageText = messageText
-        this.messageTo = messageTo
-        this.messageFrom = messageFrom
-    }
-}

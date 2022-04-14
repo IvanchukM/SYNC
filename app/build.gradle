@@ -55,9 +55,11 @@ dependencies {
     implementation "com.google.firebase:firebase-core:$firebaseCore_version"
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation "com.google.android.gms:play-services-auth:$playServicesAuth_version"
+    implementation "com.google.firebase:firebase-firestore:11.4.2"
     //UI
     implementation 'com.firebaseui:firebase-ui-auth:8.0.0'
     implementation 'com.firebaseui:firebase-ui-database:8.0.0'
+    implementation "com.firebaseui:firebase-ui-firestore:3.0.0"
     implementation 'com.firebase:firebase-ui:0.1.0'
 
     // ViewModel & LiveData

@@ -4,14 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sync.databinding.DialogListItemBinding
-import com.example.sync.model.ChatMembers
-import com.example.sync.model.ChatRoom
+import com.example.sync.model.UserModel
 import com.example.sync.utils.loadImage
 
-class DialogMembersAdapter(private val createChatClickListener: CreateChatClickListener) :
+class DialogMembersAdapter(private val onUserClickListener: OnUserClickListener) :
     RecyclerView.Adapter<DialogListVIewHolder>() {
 
-    private var chatMembers: List<ChatMembers> = listOf()
+    private var chatMembers: List<UserModel> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DialogListVIewHolder =
         DialogListVIewHolder(
@@ -20,7 +19,7 @@ class DialogMembersAdapter(private val createChatClickListener: CreateChatClickL
                 parent,
                 false,
             ),
-            createChatClickListener
+            onUserClickListener
         )
 
     override fun onBindViewHolder(holder: DialogListVIewHolder, position: Int) {
@@ -29,7 +28,7 @@ class DialogMembersAdapter(private val createChatClickListener: CreateChatClickL
 
     override fun getItemCount(): Int = chatMembers.size
 
-    fun setDialogMembers(chatMembers: List<ChatMembers>) {
+    fun setDialogMembers(chatMembers: List<UserModel>) {
         this.chatMembers = chatMembers
         notifyDataSetChanged()
     }
@@ -38,26 +37,26 @@ class DialogMembersAdapter(private val createChatClickListener: CreateChatClickL
 
 class DialogListVIewHolder(
     private val binding: DialogListItemBinding,
-    private val createChatClickListener: CreateChatClickListener
+    private val onUserClickListener: OnUserClickListener
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(
-        chatMembers: ChatMembers
+        userModel: UserModel
     ) {
-        binding.userProfileImage.loadImage(chatMembers.userProfileImage)
-        binding.username.text = chatMembers.username
+        binding.userProfileImage.loadImage(userModel.userProfileImage)
+        binding.username.text = userModel.username
 
-        binding.username.setOnClickListener {
-            createChatClickListener.createChat(
-                userId = chatMembers.userId
+        binding.user.setOnClickListener {
+            onUserClickListener.openChat(
+                userModel = userModel
             )
         }
     }
 }
 
-interface CreateChatClickListener {
-    fun createChat(
-        userId: String
+interface OnUserClickListener {
+    fun openChat(
+        userModel: UserModel
     )
 }
