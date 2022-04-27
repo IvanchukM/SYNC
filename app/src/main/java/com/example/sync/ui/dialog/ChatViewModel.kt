@@ -14,6 +14,7 @@ import com.example.sync.utils.Utils
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.Query
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.*
@@ -23,12 +24,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
+    private val firebaseFirestore: FirebaseFirestore
 ) : ViewModel() {
 
     var uid: String? = null
 
     val chatRoomId = MutableLiveData<String>()
+
+
+    val chatQuery = MutableLiveData<FirestoreRecyclerOptions<Message>>()
 
     private val messageList = mutableListOf<Message>()
 
@@ -42,26 +47,6 @@ class ChatViewModel @Inject constructor(
                 Log.d("TAG", "getRoomId: ")
                 chatRoomId.postValue(roomData.documents.first().data?.get(CHAT_ROOM_ID).toString())
             }
-    }
-
-    fun getMessages(roomId: String): Flow<LoadingState<List<Message>>> = channelFlow {
-        send(LoadingState.loading())
-        repository.getMessages(roomId)
-            .addOnSuccessListener { messages ->
-                for (message in messages) {
-                    Log.d("TAG", "getMessages: $message")
-                    messageList.add(
-                        Message(
-                            messageText = message.data["messageText"].toString(),
-                            receiverId = message.data["receiverId"].toString(),
-                            senderId = message.data["senderId"].toString(),
-                            roomId = chatRoomId.value.toString()
-                        )
-                    )
-                }
-            }.await()
-
-        send(LoadingState.success(messageList.toList()))
     }
 
     fun sendMessage(message: String, chatRoomMembers: ChatRoomMembers) {
@@ -78,14 +63,41 @@ class ChatViewModel @Inject constructor(
     private fun getUid() =
         viewModelScope.launch(IO) { repository.getUid().let { uid = it } }
 
-    fun getUserName() = flow<LoadingState<String>> {
-        emit(LoadingState.loading())
-        val data = repository.getUsername(uid.toString())
-        emit(
-            LoadingState.success(data.toString())
-        )
-    }.catch {
-        emit(LoadingState.failed(it.message.toString()))
-    }.flowOn(IO)
 
+    fun getChatQuery(chatRoomId: String) {
+        chatQuery.postValue(repository.getChatQuery(chatRoomId))
+    }
+
+    /*
+     fun getMessages(roomId: String): Flow<LoadingState<List<Message>>> = channelFlow {
+         send(LoadingState.loading())
+         repository.getMessages(roomId)
+             .addOnSuccessListener { messages ->
+                 for (message in messages) {
+                     Log.d("TAG", "getMessages: $message")
+                     messageList.add(
+                         Message(
+                             messageText = message.data["messageText"].toString(),
+                             receiverId = message.data["receiverId"].toString(),
+                             senderId = message.data["senderId"].toString(),
+                             messageSendTime = Utils.getCurrentTime(),
+                             roomId = chatRoomId.value.toString()
+                         )
+                     )
+                 }
+             }.await()
+
+         send(LoadingState.success(messageList.toList()))
+     }
+
+     fun getUserName() = flow<LoadingState<String>> {
+         emit(LoadingState.loading())
+         val data = repository.getUsername(uid.toString())
+         emit(
+             LoadingState.success(data.toString())
+         )
+     }.catch {
+         emit(LoadingState.failed(it.message.toString()))
+     }.flowOn(IO)
+ */
 }

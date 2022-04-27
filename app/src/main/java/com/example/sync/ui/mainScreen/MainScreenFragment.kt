@@ -9,6 +9,7 @@ import com.example.sync.databinding.FragmentMainScreenBinding
 import com.example.sync.ui.BaseFragment
 import com.example.sync.ui.dialog.ChatFragment
 import com.example.sync.ui.dialoglist.CreateDialogFragment
+import com.example.sync.ui.samples.SamplesFragment
 import com.example.sync.ui.validation.LoginFragment
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -24,6 +25,9 @@ class MainScreenFragment : BaseFragment<FragmentMainScreenBinding>() {
         }
         binding.createDialogButton.setOnClickListener {
             openFragment(CreateDialogFragment.newInstance())
+        }
+        binding.openSamplesButton.setOnClickListener {
+            openFragment(SamplesFragment.newInstance())
         }
         binding.logout.setOnClickListener {
             Firebase.auth.signOut()

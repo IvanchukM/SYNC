@@ -1,20 +1,16 @@
 package com.example.sync.ui.dialog
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.example.sync.databinding.FragmentDialogBinding
 import com.example.sync.model.BuyOrSell
 import com.example.sync.model.ChatRoomMembers
 import com.example.sync.model.Message
 import com.example.sync.ui.BaseFragment
-import com.example.sync.utils.LoadingState
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 private const val ARG_CHAT_ROOM_MEMBERS = "chatRoomMembers"
 
@@ -53,6 +49,8 @@ class ChatFragment : BaseFragment<FragmentDialogBinding>() {
         super.onViewCreated(view, savedInstanceState)
         val chatRoom = arguments?.getParcelable<ChatRoomMembers>(ARG_CHAT_ROOM_MEMBERS)
 
+        showProgressBar()
+
         binding.sendButton.setOnClickListener {
             if (chatRoom != null) {
                 viewModel.sendMessage(
@@ -63,38 +61,62 @@ class ChatFragment : BaseFragment<FragmentDialogBinding>() {
             binding.messageEditText.text = null
         }
         viewModel.chatRoomId.observe(viewLifecycleOwner) {
-            loadMessages(it)
+            viewModel.getChatQuery(it)
+            hideProgressBar()
+        }
+        viewModel.chatQuery.observe(viewLifecycleOwner) { query ->
+            initMessageLoading(query)
         }
     }
 
-    private fun loadMessages(roomId: String) {
-        lifecycleScope.launch {
-            viewModel.getMessages(roomId).collect { loadingState ->
-                when (loadingState) {
-                    is LoadingState.Loading -> {
-                    }
-                    is LoadingState.Success -> {
-                        initAdapter(loadingState.data)
-                        binding.messageRecyclerView.isVisible = true
-                        binding.progressBar.isVisible = false
-                        binding.sendMsgLayout.isVisible = true
-                    }
-                    is LoadingState.Failed -> {
-                    }
-                }
-            }
-        }
+    private fun initMessageLoading(query: FirestoreRecyclerOptions<Message>) {
+        initAdapter(query)
     }
 
-    private fun initAdapter(messages: List<Message>) {
+//    private fun loadMessages(roomId: String, query: Query) {
+//        lifecycleScope.launch {
+//            viewModel.getMessages(roomId).collect { loadingState ->
+//                when (loadingState) {
+//                    is LoadingState.Loading -> {
+//                    }
+//                    is LoadingState.Success -> {
+//                        initAdapter(loadingState.data)
+//                        binding.messageRecyclerView.isVisible = true
+//                        binding.progressBar.isVisible = false
+//                        binding.sendMsgLayout.isVisible = true
+//                    }
+//                    is LoadingState.Failed -> {
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    private fun showProgressBar() {
+        binding.messageRecyclerView.isVisible = false
+        binding.progressBar.isVisible = true
+        binding.sendMsgLayout.isVisible = false
+    }
+
+    private fun hideProgressBar() {
+        binding.messageRecyclerView.isVisible = true
+        binding.progressBar.isVisible = false
+        binding.sendMsgLayout.isVisible = true
+    }
+
+    private fun initAdapter(options: FirestoreRecyclerOptions<Message>) {
         val chatRoom = arguments?.getParcelable<ChatRoomMembers>(ARG_CHAT_ROOM_MEMBERS)
 
         if (chatRoom != null) {
-            adapter = ChatAdapter(messages.sortedWith(compareBy {
-                it.messageTime
-            }), chatRoom, viewModel.uid ?: "")
+            adapter = ChatAdapter(chatRoom, viewModel.uid ?: "", options)
             binding.messageRecyclerView.adapter = adapter
         }
+        adapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        adapter.stopListening()
     }
 
     companion object {

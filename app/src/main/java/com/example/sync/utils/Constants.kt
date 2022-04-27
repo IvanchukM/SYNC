@@ -23,5 +23,7 @@ class Constants {
         const val CHAT_ROOM_ID: String = "roomId"
         const val CHATROOM: String = "chatRoom"
         const val MESSAGES: String = "messages"
+        const val IMAGE: String = "image"
+        const val AUDIO: String = "audio"
     }
 }

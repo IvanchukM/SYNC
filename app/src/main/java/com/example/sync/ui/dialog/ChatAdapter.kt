@@ -9,12 +9,14 @@ import com.example.sync.databinding.MessageFromItemBinding
 import com.example.sync.databinding.MessageToItemBinding
 import com.example.sync.model.ChatRoomMembers
 import com.example.sync.model.Message
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
 class ChatAdapter(
-    private val messages: List<Message>,
     private val chatRoomMembers: ChatRoomMembers,
-    private val currentUserId: String
-) : RecyclerView.Adapter<ViewHolder>() {
+    private val currentUserId: String,
+    private val options: FirestoreRecyclerOptions<Message>
+) : FirestoreRecyclerAdapter<Message, ViewHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -35,34 +37,35 @@ class ChatAdapter(
         }
     }
 
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+        model: Message
+    ) {
+        if (options.snapshots[position].senderId == currentUserId) {
+            (holder as MessageToViewHolder).bind(model)
+        } else {
+            (holder as MessageFromViewHolder).bind(model)
+        }
+    }
+
     override fun getItemViewType(position: Int): Int =
-        if (messages[position].senderId == currentUserId) VIEW_TYPE_CURRENT_USER else VIEW_TYPE_FOREIGN_USER
+        if (options.snapshots[position].senderId == currentUserId) VIEW_TYPE_CURRENT_USER else VIEW_TYPE_FOREIGN_USER
 
 
     companion object {
         const val VIEW_TYPE_CURRENT_USER = 1
         const val VIEW_TYPE_FOREIGN_USER = 2
     }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (messages[position].senderId == currentUserId) {
-            (holder as MessageToViewHolder).bind(messages[position])
-        } else {
-            (holder as MessageFromViewHolder).bind(messages[position])
-        }
-    }
-
-    override fun getItemCount(): Int = messages.size
 }
 
 class MessageFromViewHolder(
     private val binding: MessageFromItemBinding,
     private val chatRoomMembers: ChatRoomMembers
-) :
-    ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: Message) {
-        binding.messengerTextView.text = chatRoomMembers.currentUser.username
+        binding.messengerTextView.text = chatRoomMembers.secondUser.username
         binding.messageTextView.text = item.messageText
     }
 }
@@ -70,11 +73,10 @@ class MessageFromViewHolder(
 class MessageToViewHolder(
     private val binding: MessageToItemBinding,
     private val chatRoomMembers: ChatRoomMembers
-) :
-    ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(item: Message) {
-        binding.messengerTextView.text = chatRoomMembers.secondUser.username
+        binding.messengerTextView.text = chatRoomMembers.currentUser.username
         binding.messageTextView.text = item.messageText
     }
 }
